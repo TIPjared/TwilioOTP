@@ -12,7 +12,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.1.0",
-    "twilio": "^5.8.0"
+    "dotenv": "^17.2.1"
   }
 }
