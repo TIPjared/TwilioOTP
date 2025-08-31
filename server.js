@@ -27,19 +27,24 @@ app.get('/', (req, res) => {
 app.post('/otp/start', async (req, res) => {
   try {
     const { phone, channel = 'sms' } = req.body;
+    console.log("📨 START phone:", phone, "channel:", channel);  // LOG inside try
     const v = await client.verify.v2.services(VERIFY_SID)
       .verifications.create({ to: phone, channel });
     res.json({ status: v.status }); // "pending"
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
+    console.log("START phone:", phone);  // in /otp/start
 });
+
 
 // Check code + mark user verified (requires Firebase ID token)
 app.post('/otp/check', async (req, res) => {
   try {
     const idToken = (req.headers.authorization || '').replace('Bearer ', '');
     const { phone, code } = req.body;
+    console.log("📥 CHECK phone:", phone, "code:", code);  // LOG inside try
+
 
     // Verify Firebase session
     const decoded = await admin.auth().verifyIdToken(idToken);
@@ -72,6 +77,8 @@ app.post('/otp/check', async (req, res) => {
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
+
+  console.log("CHECK phone:", phone, "code:", code);  // in /otp/check
 });
 
 // Use Render's dynamic PORT (fallback to 8080 locally)
