@@ -24,14 +24,14 @@ app.get('/', (req, res) => {
 });
 
 // Start verification (send code via SMS or WhatsApp or Call)
-app.post("/send-otp", async (req, res) => {
+app.post("/otp/start", async (req, res) => {
   const phone = req.body.phone; 
   const channel = "sms";
 
   console.log(`📨 START phone: ${phone} channel: ${channel}`);
 
   try {
-    const verification = await client.verify.v2.services(serviceSid)
+    const verification = await client.verify.v2.services(VERIFY_SID)
       .verifications.create({ to: phone, channel });
     res.json({ success: true, sid: verification.sid });
   } catch (error) {
@@ -39,6 +39,7 @@ app.post("/send-otp", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
 
 // Check code + mark user verified (requires Firebase ID token)
 app.post('/otp/check', async (req, res) => {
