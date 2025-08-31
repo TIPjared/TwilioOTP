@@ -24,19 +24,21 @@ app.get('/', (req, res) => {
 });
 
 // Start verification (send code via SMS or WhatsApp or Call)
-app.post('/otp/start', async (req, res) => {
-  try {
-    const { phone, channel = 'sms' } = req.body;
-    console.log("📨 START phone:", phone, "channel:", channel);  // LOG inside try
-    const v = await client.verify.v2.services(VERIFY_SID)
-      .verifications.create({ to: phone, channel });
-    res.json({ status: v.status }); // "pending"
-  } catch (e) {
-    res.status(400).json({ error: e.message });
-  }
-    console.log("START phone:", phone);  // in /otp/start
-});
+app.post("/send-otp", async (req, res) => {
+  const phone = req.body.phone; 
+  const channel = "sms";
 
+  console.log(`📨 START phone: ${phone} channel: ${channel}`);
+
+  try {
+    const verification = await client.verify.v2.services(serviceSid)
+      .verifications.create({ to: phone, channel });
+    res.json({ success: true, sid: verification.sid });
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Check code + mark user verified (requires Firebase ID token)
 app.post('/otp/check', async (req, res) => {
